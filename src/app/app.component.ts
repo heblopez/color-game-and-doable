@@ -6,12 +6,35 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [RouterOutlet],
   template: `
-    <h1>Welcome to {{title}}!</h1>
-
-    <router-outlet />
+    <div class="wrapper">
+      <header class="header">
+        <a class="logo" href="/"
+          ><img src="assets/angular.svg" />Angular Evaluation</a
+        >
+        <nav class="nav">
+          @for (item of navigation; track item.to) {
+          <a class="nav-item" [href]="item.to">
+            {{ item.name }}
+          </a>
+          }
+        </nav>
+      </header>
+      <main class="main">
+        <router-outlet />
+      </main>
+    </div>
   `,
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'angular-evaluation';
+  navigation = [
+    {
+      name: 'Color Game',
+      to: '/color-game',
+    },
+    {
+      name: 'Doable',
+      to: '/doable',
+    },
+  ];
 }
