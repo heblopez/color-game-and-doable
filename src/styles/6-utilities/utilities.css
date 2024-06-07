@@ -1,0 +1,15 @@
+.full-width {
+  width: 100% !important;
+}
+
+.min-w-30 {
+  min-width: 120px;
+}
+
+.bg-neutral {
+  background: var(--neutral-50, #FAFAFA);
+}
+
+.text-center {
+  text-align: center;
+}
