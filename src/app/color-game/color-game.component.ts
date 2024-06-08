@@ -1,4 +1,4 @@
-import { Component, computed, effect, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, QueryList, signal, ViewChildren } from '@angular/core';
 import { getRandomColors, getStatus, rgbString } from './utils';
 import { Color } from './interfaces';
 import { CommonModule } from '@angular/common';
@@ -47,7 +47,7 @@ import { CommonModule } from '@angular/common';
       </div>
       <div class="squares">
         @for (color of colors(); track $index) {
-        <button
+        <button #square
           [ngStyle]="{
             'background-color': rgbString(color),
             opacity: '1'
@@ -77,12 +77,13 @@ export class ColorGameComponent {
   status = computed(() =>
     getStatus(this.attempts(), this.targetIndex(), this.numOfColors())
   );
+  @ViewChildren('square') squares!: QueryList<ElementRef<HTMLButtonElement>>;
 
   constructor() {
     effect(() => {
       if (this.status() === 'win' || this.status() === 'lose') {
         this.resetOpacity();
-        this.resetColor();
+        this.squaresToTargetColor();
       }
     })
   }
@@ -97,7 +98,6 @@ export class ColorGameComponent {
     this.colors.set(getRandomColors(this.numOfColors()));
     this.targetIndex.set(Math.floor(Math.random() * this.colors().length));
     this.attempts.set([]);
-    console.log(this.targetColor(), this.targetIndex());
     this.resetOpacity();
   }
 
@@ -106,20 +106,17 @@ export class ColorGameComponent {
     const square = event.target as HTMLButtonElement;
     square.style.opacity = '0';
     this.attempts.update((attempts) => [...attempts, index]);
-    console.log(this.attempts(), this.status());
   }
 
   resetOpacity() {
-    const squares = document.querySelectorAll('.square');
-    squares.forEach((square) => {
-      (square as HTMLButtonElement).style.opacity = '1';
+    this.squares.forEach((square: ElementRef<HTMLButtonElement>) => {
+      square.nativeElement.style.opacity = '1';
     });
   }
 
-  resetColor() {
-    const squares = document.querySelectorAll('.square');
-    squares.forEach((square) => {
-      (square as HTMLButtonElement).style.backgroundColor = rgbString(this.targetColor());
+  squaresToTargetColor() {
+    this.squares.forEach((square: ElementRef<HTMLButtonElement>) => {
+      square.nativeElement.style.backgroundColor = rgbString(this.targetColor());
     });
   }
 }
