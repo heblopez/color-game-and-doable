@@ -14,7 +14,9 @@ import { RouterLink } from '@angular/router';
         <a class="button button--outline min-w-30" routerLink="color-game">
           Color Game
         </a>
-        <a class="button button--outline min-w-30" routerLink="doable"> Doable </a>
+        <a class="button button--outline min-w-30" routerLink="doable">
+          Doable
+        </a>
       </div>
     </div>
   `,
