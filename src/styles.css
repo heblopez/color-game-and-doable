@@ -18,8 +18,5 @@
 /* 4. Objects */
 @import url(styles/4-objects/objects.css);
 
-/* 5. Components */
-@import url(styles/5-components/button.css);
-
 /* 6. Utilities */
 @import url(styles/6-utilities/utilities.css);

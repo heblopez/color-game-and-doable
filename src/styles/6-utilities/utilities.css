@@ -3,13 +3,13 @@
 }
 
 .min-w-30 {
-  min-width: 120px;
+  min-width: 120px !important;
 }
 
 .bg-neutral {
-  background: var(--neutral-50, #FAFAFA);
+  background: var(--neutral-50, #FAFAFA) !important;
 }
 
 .text-center {
-  text-align: center;
+  text-align: center !important;
 }

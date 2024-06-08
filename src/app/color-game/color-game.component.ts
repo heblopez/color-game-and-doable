@@ -2,11 +2,12 @@ import { Component, computed, effect, ElementRef, QueryList, signal, ViewChildre
 import { getRandomColors, getStatus, rgbString } from './utils';
 import { Color } from './interfaces';
 import { CommonModule } from '@angular/common';
+import { ButtonComponent } from '../shared/components/button/button.component';
 
 @Component({
   selector: 'app-color-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ButtonComponent],
   template: `
     <div class="wrapper">
       <h1 class="title">Color Game</h1>
@@ -43,7 +44,7 @@ import { CommonModule } from '@angular/common';
           />
         </div>
         <p class="game-status">{{ statusMessages[status()] }}</p>
-        <button class="button" (click)="handleReset()">Reset</button>
+        <app-button (click)="handleReset()" styleBtn="primary">Reset</app-button>
       </div>
       <div class="squares">
         @for (color of colors(); track $index) {
