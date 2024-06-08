@@ -1,11 +1,11 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-button',
   standalone: true,
   imports: [],
   template: `
-    <button [className]="getStyleClass() + ' ' + getSizeClass() + ' ' + className()">
+    <button [class]="['button', getStyleClass(), getSizeClass(), className()]">
       <ng-content/>
     </button>
   `,
@@ -15,13 +15,13 @@ import { Component, input, output } from '@angular/core';
 export class ButtonComponent {
   styleBtn = input.required<'primary' | 'secondary' | 'outline'>();
   sizeBtn = input<'sm' | 'lg' | 'icon'>();
-  className = input<string>();
+  className = input<string>('');
 
   getStyleClass(): string {
     const styleClasses = {
-      primary: 'button',
-      secondary: 'button button--secondary',
-      outline: 'button button--outline',
+      primary: '',
+      secondary: 'button--secondary',
+      outline: 'button--outline',
     };
 
     return styleClasses[this.styleBtn()];
