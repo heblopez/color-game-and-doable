@@ -29,7 +29,7 @@ import { CommonModule } from '@angular/common';
           />
         </div>
         <p class="game-status">{{ statusMessages[status] }}</p>
-        <button onClick="{handleReset}">Reset</button>
+        <button class="button" onClick="{handleReset}">Reset</button>
       </div>
       <div class="squares">
         @for (color of colors; track $index) {
