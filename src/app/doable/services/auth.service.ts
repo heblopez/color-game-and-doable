@@ -1,3 +1,4 @@
+import { environment } from '@env/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
@@ -6,8 +7,8 @@ import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://doable-api-production.up.railway.app';
-  private tokenKey = 'doable-token';
+  private apiUrl = environment.baseUrl;
+  private tokenKey = environment.authKey;
   private isAuthenticated = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {
