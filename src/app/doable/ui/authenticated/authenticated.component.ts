@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-authenticated',
@@ -33,7 +34,10 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
             <label for="important">Only important</label>
           </div>
         </div>
-        <app-button styleBtn="secondary" sizeBtn="sm" className="full-w">Logout</app-button>
+        <app-button styleBtn="secondary" sizeBtn="sm"
+          className="full-w" (click)="logout()">
+          Logout
+        </app-button>
       </aside>
       <div class="tasks-list">
         <!-- Aquí empieza el @for -->
@@ -42,7 +46,7 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
             <input type="checkbox" name="" id="task_id">
             <div class="title-wrapper">
               <label for="task_id" class="task-title">Note 1</label>
-              <small class="task-due-date">Friday, June 8</small>
+              <small class="task-due-date">Saturday, June 8</small>
             </div>
           </div>
           <div class="actions">
@@ -60,5 +64,10 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
   `,
   styleUrl: './authenticated.component.css',
 })
+export class AuthenticatedComponent {
+  private authService = inject(AuthService);
 
-export class AuthenticatedComponent {}
+  logout(): void {
+    this.authService.logout();
+  }
+}

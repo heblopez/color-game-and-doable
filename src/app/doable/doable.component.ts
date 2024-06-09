@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AuthenticatedComponent } from './ui/authenticated/authenticated.component';
 import { UnauthenticatedComponent } from './ui/unauthenticated/unauthenticated.component';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-doable',
@@ -19,6 +20,13 @@ import { UnauthenticatedComponent } from './ui/unauthenticated/unauthenticated.c
   `,
   styleUrl: './doable.component.css',
 })
-export class DoableComponent {
-  isAuthenticated = true;
+export class DoableComponent implements OnInit {
+  isAuthenticated = false;
+  private authService = inject(AuthService);
+
+  ngOnInit(): void {
+    this.authService.isLoggedIn().subscribe(res => {
+      this.isAuthenticated = res;
+    });
+  }
 }
