@@ -3,11 +3,12 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
 import { AuthService } from '../../services/auth.service';
 import { TasksService } from '../../services/tasks.service';
 import { Task } from '../../interfaces/task.interface';
+import { DateFormatedPipe } from '../../pipes/date-formated.pipe';
 
 @Component({
   selector: 'app-authenticated',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, DateFormatedPipe],
   template: `
     <form class="task-form">
       <input id="title" type="text" name="title" placeholder="do the dishes" required="" aria-label="title">
@@ -45,10 +46,10 @@ import { Task } from '../../interfaces/task.interface';
         @for (task of tasks; track task.id) {
           <div class="task-wrapper">
             <div class="task-data">
-              <input type="checkbox" [id]="task.id">
+              <input type="checkbox" [checked]="task.completed" [id]="task.id">
               <div class="title-wrapper">
                 <label [for]="task.id" class="task-title">{{ task.title }}</label>
-                <small class="task-due-date">{{ task.due_date}}</small>
+                <small class="task-due-date">{{ task.due_date | dateFormated }}</small>
               </div>
             </div>
             <div class="actions">
