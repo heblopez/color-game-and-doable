@@ -1,6 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { AuthService } from '../../services/auth.service';
+import { TasksService } from '../../services/tasks.service';
+import { Task } from '../../interfaces/task.interface';
 
 @Component({
   selector: 'app-authenticated',
@@ -40,32 +42,46 @@ import { AuthService } from '../../services/auth.service';
         </app-button>
       </aside>
       <div class="tasks-list">
-        <!-- Aquí empieza el @for -->
-        <div class="task-wrapper">
-          <div class="task-data">
-            <input type="checkbox" name="" id="task_id">
-            <div class="title-wrapper">
-              <label for="task_id" class="task-title">Note 1</label>
-              <small class="task-due-date">Saturday, June 8</small>
+        @for (task of tasks; track task.id) {
+          <div class="task-wrapper">
+            <div class="task-data">
+              <input type="checkbox" [id]="task.id">
+              <div class="title-wrapper">
+                <label [for]="task.id" class="task-title">{{ task.title }}</label>
+                <small class="task-due-date">{{ task.due_date}}</small>
+              </div>
+            </div>
+            <div class="actions">
+              <app-button styleBtn="outline" sizeBtn="icon">
+                <img src="/app/doable/assets/important-icon.svg" alt="important-icon">
+              </app-button>
+              <app-button styleBtn="outline" sizeBtn="icon">
+                <img src="app/doable/assets/trash-icon.svg" alt="trash-icon">
+              </app-button>
             </div>
           </div>
-          <div class="actions">
-            <app-button styleBtn="outline" sizeBtn="icon">
-              <img src="/app/doable/assets/important-icon.svg" alt="important-icon">
-            </app-button>
-            <app-button styleBtn="outline" sizeBtn="icon">
-              <img src="app/doable/assets/trash-icon.svg" alt="trash-icon">
-            </app-button>
-          </div>
-        </div>
-        <!-- Aquí finaliza el @for -->
+        }
       </div>
     </div>
   `,
   styleUrl: './authenticated.component.css',
 })
-export class AuthenticatedComponent {
+export class AuthenticatedComponent implements OnInit {
   private authService = inject(AuthService);
+  private tasksService = inject(TasksService);
+
+  tasks: Task[] = [];
+  newTask: Partial<Task> = {};
+
+  loadTasks() {
+    this.tasksService.listTasks().subscribe(tasksData => {
+      this.tasks = tasksData;
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadTasks();
+  }
 
   logout(): void {
     this.authService.logout();

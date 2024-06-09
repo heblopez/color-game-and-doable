@@ -22,7 +22,7 @@ export class TasksService {
     });
   }
 
-  private listTasks() {
+  listTasks() {
     return this.http
       .get<Task[]>(`${this.apiUrl}/tasks`, {
         headers: this.getAuthHeaders(),
@@ -30,7 +30,7 @@ export class TasksService {
       .pipe(catchError(this.handleError));
   }
 
-  private createTask(task: Partial<Task>) {
+  createTask(task: Partial<Task>) {
     return this.http
       .post<Task>(`${this.apiUrl}/tasks`, task, {
         headers: this.getAuthHeaders(),
@@ -38,7 +38,7 @@ export class TasksService {
       .pipe(catchError(this.handleError));
   }
 
-  private updateTask(task: Partial<Task>) {
+  updateTask(task: Partial<Task>) {
     return this.http
       .put<Task>(`${this.apiUrl}/tasks/${task.id}`, task, {
         headers: this.getAuthHeaders(),
@@ -46,7 +46,7 @@ export class TasksService {
       .pipe(catchError(this.handleError));
   }
 
-  private deleteTask(id: number) {
+  deleteTask(id: number) {
     return this.http
       .delete<Task>(`${this.apiUrl}/tasks/${id}`, {
         headers: this.getAuthHeaders(),
