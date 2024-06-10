@@ -34,7 +34,7 @@ import { FormsModule } from '@angular/forms';
       <aside class="aside">
         <div class="input-group">
           <label for="sort_by">Sort by</label>
-          <select id="sort_by">
+          <select (change)="sortTasks($event)" id="sort_by">
             <option value="due_date-asc">Due Date (old first)</option>
             <option value="due_date-desc">Due Date (new first)</option>
             <option value="alphabetical-asc">Alphabetical (a-z)</option>
@@ -104,6 +104,26 @@ export class AuthenticatedComponent implements OnInit {
         console.error('Error loading tasks: ' + e.message);
       },
     });
+  }
+
+  sortTasks(event: Event) {
+    const sortBy = (event.target as HTMLSelectElement).value;
+    switch (sortBy) {
+      case 'due_date-asc':
+        this.tasks.update((tasks) => tasks.sort((a, b) => a.due_date.localeCompare(b.due_date)));
+        break;
+      case 'due_date-desc':
+        this.tasks.update((tasks) => tasks.sort((a, b) => b.due_date.localeCompare(a.due_date)));
+        break;
+      case 'alphabetical-asc':
+        this.tasks.update((tasks) => tasks.sort((a, b) => a.title.localeCompare(b.title)));
+        break;
+      case 'alphabetical-desc':
+        this.tasks.update((tasks) => tasks.sort((a, b) => b.title.localeCompare(a.title)));
+        break;
+      default:
+        break;
+    }
   }
 
   createTask() {

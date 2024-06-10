@@ -4,6 +4,7 @@ import { environment } from '@/environments/environment';
 import { AuthService } from './auth.service';
 import { catchError, map, Observable, throwError } from 'rxjs';
 import { Task } from '../interfaces/task.interface';
+import { endOfYear, format } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +28,18 @@ export class TasksService {
       .get<Task[]>(`${this.apiUrl}/tasks`, {
         headers: this.getAuthHeaders(),
       })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map((tasks) => {
+          tasks = tasks.map((task) => {
+            if (!task.due_date) {
+              task.due_date = this.parseNullDate();
+            }
+            return task;
+          });
+          return tasks;
+        }),
+        catchError(this.handleError)
+      );
   }
 
   createTask(task: Partial<Task>) {
@@ -57,5 +69,10 @@ export class TasksService {
 
   private handleError(error: Error): Observable<never> {
     return throwError(() => new Error(error.message));
+  }
+
+  private parseNullDate(): string {
+    const lastDayOfYear = endOfYear(new Date());
+    return format(lastDayOfYear, 'yyyy-MM-dd');
   }
 }
