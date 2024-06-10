@@ -40,7 +40,7 @@ export class TasksService {
 
   updateTask(task: Partial<Task>) {
     return this.http
-      .put<Task>(`${this.apiUrl}/tasks/${task.id}`, task, {
+      .patch<Task>(`${this.apiUrl}/tasks/${task.id}`, task, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));

@@ -47,14 +47,14 @@ import { FormsModule } from '@angular/forms';
         @for (task of tasks(); track task.id) {
           <div class="task-wrapper">
             <div class="task-data">
-              <input type="checkbox" [checked]="task.completed" [id]="task.id">
+              <input (change)="completedHandler(task)" type="checkbox" [checked]="task.completed" [id]="task.id">
               <div class="title-wrapper">
                 <label [for]="task.id" class="task-title">{{ task.title }}</label>
                 <small class="task-due-date">{{ task.due_date | dateFormated }}</small>
               </div>
             </div>
             <div class="actions">
-              <app-button styleBtn="outline" sizeBtn="icon">
+              <app-button (click)="importantHandler(task)" [styleBtn]="task.important ? 'secondary' : 'outline'" sizeBtn="icon">
                 <img src="/app/doable/assets/important-icon.svg" alt="important-icon">
               </app-button>
               <app-button styleBtn="outline" sizeBtn="icon">
@@ -76,8 +76,13 @@ export class AuthenticatedComponent implements OnInit {
   newTask: Partial<Task> = {};
 
   loadTasks() {
-    this.tasksService.listTasks().subscribe(tasksData => {
-      this.tasks.set(tasksData);
+    this.tasksService.listTasks().subscribe({
+      next: (tasksData) => {
+        this.tasks.set(tasksData);
+      },
+      error: (e) => {
+        console.error('Error loading tasks: ' + e.message);
+      }
     });
   }
 
@@ -91,6 +96,34 @@ export class AuthenticatedComponent implements OnInit {
       },
       error: (e) => {
         alert('Error creating task: ' + e.message);
+      }
+    })
+  }
+
+  completedHandler(task: Partial<Task>) {
+    task.completed = !task.completed;
+    this.tasksService.updateTask(task).subscribe({
+      next: (taskUpdated) => {
+        if (taskUpdated) {
+          this.tasks.update(tasks => tasks.map(t => t.id === taskUpdated.id ? taskUpdated : t));
+        }
+      },
+      error: (e) => {
+        alert('Error updating task: ' + e.message);
+      }
+    })
+  }
+
+  importantHandler(task: Partial<Task>) {
+    task.important = !task.important;
+    this.tasksService.updateTask(task).subscribe({
+      next: (taskUpdated) => {
+        if (taskUpdated) {
+          this.tasks.update(tasks => tasks.map(t => t.id === taskUpdated.id ? taskUpdated : t));
+        }
+      },
+      error: (e) => {
+        alert('Error updating task: ' + e.message);
       }
     })
   }
