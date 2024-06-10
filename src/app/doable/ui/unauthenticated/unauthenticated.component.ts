@@ -19,7 +19,7 @@ import { FormsModule } from '@angular/forms';
           Signup
         </button>
       </div>
-      <form (submit)="submit()" class="form">
+      <form (ngSubmit)="submit()" class="form">
         <div>
           <label for="email">Email</label>
           <input [(ngModel)]="email" id="email" type="text" name="email" placeholder="user@example.com" required="">

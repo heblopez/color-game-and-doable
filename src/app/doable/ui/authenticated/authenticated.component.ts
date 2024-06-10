@@ -1,18 +1,19 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { AuthService } from '../../services/auth.service';
 import { TasksService } from '../../services/tasks.service';
 import { Task } from '../../interfaces/task.interface';
 import { DateFormatedPipe } from '../../pipes/date-formated.pipe';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-authenticated',
   standalone: true,
-  imports: [ButtonComponent, DateFormatedPipe],
+  imports: [ButtonComponent, DateFormatedPipe, FormsModule],
   template: `
-    <form class="task-form">
-      <input id="title" type="text" name="title" placeholder="do the dishes" required="" aria-label="title">
-      <input id="due_date" type="date" name="due_date" aria-label="due_date">
+    <form (ngSubmit)="createTask()" class="task-form">
+      <input [(ngModel)]="newTask.title" id="title" type="text" name="title" placeholder="do the dishes" required="" aria-label="title">
+      <input [(ngModel)]="newTask.due_date" id="due_date" type="date" name="due_date" aria-label="due_date">
       <app-button styleBtn="primary" className="full-w">Add task</app-button>
     </form>
     <div class="tasks-wrapper">
@@ -43,7 +44,7 @@ import { DateFormatedPipe } from '../../pipes/date-formated.pipe';
         </app-button>
       </aside>
       <div class="tasks-list">
-        @for (task of tasks; track task.id) {
+        @for (task of tasks(); track task.id) {
           <div class="task-wrapper">
             <div class="task-data">
               <input type="checkbox" [checked]="task.completed" [id]="task.id">
@@ -71,13 +72,27 @@ export class AuthenticatedComponent implements OnInit {
   private authService = inject(AuthService);
   private tasksService = inject(TasksService);
 
-  tasks: Task[] = [];
+  tasks = signal<Task[]>([]);
   newTask: Partial<Task> = {};
 
   loadTasks() {
     this.tasksService.listTasks().subscribe(tasksData => {
-      this.tasks = tasksData;
+      this.tasks.set(tasksData);
     });
+  }
+
+  createTask() {
+    this.tasksService.createTask(this.newTask).subscribe({
+      next: (taskCreated) => {
+        if (taskCreated) {
+          this.newTask = {};
+          this.tasks.update(tasks => [...tasks, taskCreated]);
+        }
+      },
+      error: (e) => {
+        alert('Error creating task: ' + e.message);
+      }
+    })
   }
 
   ngOnInit(): void {
