@@ -47,7 +47,14 @@ export class TasksService {
       .post<Task>(`${this.apiUrl}/tasks`, task, {
         headers: this.getAuthHeaders(),
       })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map((task) => {
+          if (!task.due_date) {
+            task.due_date = this.parseNullDate();
+          }
+          return task;
+        }),
+        catchError(this.handleError));
   }
 
   updateTask(task: Partial<Task>) {
@@ -55,7 +62,14 @@ export class TasksService {
       .patch<Task>(`${this.apiUrl}/tasks/${task.id}`, task, {
         headers: this.getAuthHeaders(),
       })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        map((task) => {
+          if (!task.due_date) {
+            task.due_date = this.parseNullDate();
+          }
+          return task;
+        }),
+        catchError(this.handleError));
   }
 
   deleteTask(id: number) {

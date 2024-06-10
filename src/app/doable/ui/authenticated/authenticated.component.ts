@@ -44,11 +44,11 @@ import { FormsModule } from '@angular/forms';
         <div class="input-group">
           <label>Filter</label>
           <div class="checkbox">
-            <input type="checkbox" id="pending" />
+            <input [(ngModel)]="onlyPending" (change)="filterTasks()" type="checkbox" id="pending" />
             <label for="pending">Only pending</label>
           </div>
           <div class="checkbox">
-            <input type="checkbox" id="important" />
+            <input [(ngModel)]="onlyImportant" (change)="filterTasks()" type="checkbox" id="important" />
             <label for="important">Only important</label>
           </div>
         </div>
@@ -93,12 +93,16 @@ export class AuthenticatedComponent implements OnInit {
   private tasksService = inject(TasksService);
 
   tasks = signal<Task[]>([]);
+  tasksBackup: Task[] = [];
   newTask: Partial<Task> = {};
+  onlyPending = false;
+  onlyImportant = false;
 
   loadTasks() {
     this.tasksService.listTasks().subscribe({
       next: (tasksData) => {
         this.tasks.set(tasksData);
+        this.tasksBackup = tasksData;
       },
       error: (e) => {
         console.error('Error loading tasks: ' + e.message);
@@ -126,12 +130,24 @@ export class AuthenticatedComponent implements OnInit {
     }
   }
 
+  filterTasks() {
+    let tasksFiltered = [...this.tasksBackup];
+    if (this.onlyPending) {
+      tasksFiltered = tasksFiltered.filter(task => !task.completed);
+    }
+    if (this.onlyImportant) {
+      tasksFiltered = tasksFiltered.filter(task => task.important);
+    }
+    this.tasks.set(tasksFiltered);
+  }
+
   createTask() {
     this.tasksService.createTask(this.newTask).subscribe({
       next: (taskCreated) => {
         if (taskCreated) {
           this.newTask = {};
           this.tasks.update((tasks) => [...tasks, taskCreated]);
+          this.tasksBackup.push(taskCreated);
         }
       },
       error: (e) => {
@@ -146,8 +162,9 @@ export class AuthenticatedComponent implements OnInit {
       next: (taskUpdated) => {
         if (taskUpdated) {
           this.tasks.update((tasks) =>
-            tasks.map((t) => (t.id === taskUpdated.id ? taskUpdated : t))
+            tasks.map((task) => (task.id === taskUpdated.id ? taskUpdated : task))
           );
+          this.tasksBackup = this.tasksBackup.map((task) => (task.id === taskUpdated.id ? taskUpdated : task));
         }
       },
       error: (e) => {
@@ -162,8 +179,9 @@ export class AuthenticatedComponent implements OnInit {
       next: (taskUpdated) => {
         if (taskUpdated) {
           this.tasks.update((tasks) =>
-            tasks.map((t) => (t.id === taskUpdated.id ? taskUpdated : t))
+            tasks.map((task) => (task.id === taskUpdated.id ? taskUpdated : task))
           );
+          this.tasksBackup = this.tasksBackup.map((task) => (task.id === taskUpdated.id ? taskUpdated : task));
         }
       },
       error: (e) => {
@@ -176,7 +194,8 @@ export class AuthenticatedComponent implements OnInit {
     this.tasksService.deleteTask(id).subscribe({
       next: (res) => {
         if (res.status === 204) {
-          this.tasks.update((tasks) => tasks.filter((t) => t.id !== id));
+          this.tasks.update((tasks) => tasks.filter((task) => task.id !== id));
+          this.tasksBackup = this.tasksBackup.filter((task) => task.id !== id);
         }
       },
       error: (e) => {
