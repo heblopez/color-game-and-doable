@@ -1,7 +1,8 @@
 import { environment } from '@env/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, throwError } from 'rxjs';
+import { AuthResponse, Credentials } from '../interfaces/auth.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -15,12 +16,12 @@ export class AuthService {
     this.loadToken();
   }
 
-  login(email: string, password: string): Observable<boolean> {
-    return this.makeAuthRequest(`${this.apiUrl}/login`, { email, password });
+  login(credentials: Credentials) {
+    return this.makeAuthRequest(`${this.apiUrl}/login`, credentials);
   }
 
-  signup(email: string, password: string): Observable<boolean> {
-    return this.makeAuthRequest(`${this.apiUrl}/signup`, { email, password });
+  signup(credentials: Credentials) {
+    return this.makeAuthRequest(`${this.apiUrl}/signup`, credentials);;
   }
 
   logout(): void {
@@ -32,20 +33,18 @@ export class AuthService {
     return this.isAuthenticated.asObservable();
   }
 
-  private makeAuthRequest(url: string, data: any): Observable<boolean> {
-    return this.http.post<{ token: string }>(url, data).pipe(
+  private makeAuthRequest(url: string, data: Credentials): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(url, data).pipe(
       map(response => {
-        if (response.token) {
+        if ('token' in response) {
           this.saveToken(response.token);
           this.isAuthenticated.next(true);
-          return true;
-        } else {
-          return false;
+          return response;
         }
+        return response;
       }),
-      catchError((error) => {
-        console.log(error);
-        return of(false);
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error.error.errors);
       })
     );
   }
