@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { environment } from '@/environments/environment';
 import { AuthService } from './auth.service';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { Task } from '../interfaces/task.interface';
 
 @Injectable({
@@ -48,13 +48,14 @@ export class TasksService {
 
   deleteTask(id: number) {
     return this.http
-      .delete<Task>(`${this.apiUrl}/tasks/${id}`, {
+      .delete<HttpResponse<void>>(`${this.apiUrl}/tasks/${id}`, {
         headers: this.getAuthHeaders(),
+        observe: 'response',
       })
       .pipe(catchError(this.handleError));
   }
 
-  private handleError(error: any): Observable<never> {
+  private handleError(error: Error): Observable<never> {
     return throwError(() => new Error(error.message));
   }
 }
